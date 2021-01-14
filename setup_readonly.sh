@@ -1,5 +1,3 @@
-#!/bin/bash
-# From adafruit
 if [ $(id -u) -ne 0 ]; then
 	echo "Installer must be run as root."
 	echo "Try 'sudo bash $0'"
@@ -91,7 +89,7 @@ rm -fr /var/swap
 
 # Replace log management with busybox (use logread if needed)
 echo "Installing ntp and busybox-syslogd..."
-apt-get -y --force-yes install ntp busybox-syslogd; dpkg --purge rsyslog
+apt-get -y --force-yes install ntp ntpdate busybox-syslogd; dpkg --purge rsyslog
 
 echo "Configuring system..."
 
@@ -149,10 +147,6 @@ EOF
 cat >> /etc/bash.bash_logout  << EOF
 mount -o remount,ro /
 mount -o remount,ro /boot
-EOF
-
-cat > /etc/cron.d/ntp << EOF
-@reboot root ntpd -q -g
 EOF
 
 # PROMPT FOR REBOOT --------------------------------------------------------

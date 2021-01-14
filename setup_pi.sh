@@ -1,4 +1,3 @@
-#!/bin/bash
 cat > /boot/config.txt << EOF
 # For more options and information see
 # http://rpf.io/configtxt
@@ -27,6 +26,9 @@ max_framebuffers=2
 [all]
 enable_uart=1
 gpu_mem=16
+force_turbo=1
+core_freq=250
+dtparam=watchdog=on
 EOF
 
 cat > /etc/sysctl.conf << EOF
@@ -38,3 +40,37 @@ cat > /etc/systemd/journald.conf << EOF
 [Journal]
 SystemMaxUse=10M
 EOF
+
+cat >> /etc/ntp.conf << EOF
+tinker panic 0
+EOF
+
+cat > /etc/wpa_supplicant/wpa_supplicant.conf << EOF
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+country=SG
+
+network={
+ ssid="testssid"
+ psk="testpassword"
+}
+EOF
+
+cat > /boot/wpa_supplicant.conf << EOF
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+country=SG
+
+network={
+ ssid="testssid"
+ psk="testpassword"
+}
+EOF
+
+apt-get update
+apt-get install -y watchdog
+
+echo 'watchdog-device = /dev/watchdog' >> /etc/watchdog.conf
+echo 'watchdog-timeout = 15' >> /etc/watchdog.conf
+echo 'max-load-1 = 24' >> /etc/watchdog.conf
+sudo systemctl enable watchdog
