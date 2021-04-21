@@ -9,6 +9,7 @@ if [[ -e $IMG ]]; then
 	losetup -P /dev/loop20 "$IMG"
 	mount /dev/loop20p2 /mnt/rootfs
 	mount /dev/loop20p1 /mnt/boot
+        echo "Mounted on /mnt/rootfs and /mnt/boot"
 else
   echo "Usage: $0 filename"
 fi
